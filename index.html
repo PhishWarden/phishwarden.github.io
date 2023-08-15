@@ -1,7 +1,147 @@
 <!DOCTYPE html>
 <html>
+<head>
+<style>
+  body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, purple, black);
+    transition: background 1s;
+  }
+
+  .content {
+    text-align: center;
+    color: white;
+    user-select: none; /* Prevent text selection */
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+
+  /* New styles for enhancements */
+  #logo {
+    animation: pulse 2s infinite;
+  }
+
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+  
+  /* Style for the creative cursor element */
+  #cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border-radius: 50%;
+    pointer-events: none; /* Allow interactions with elements below */
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+  }
+
+  @keyframes cursorPulse {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.2);
+      opacity: 0.5;
+    }
+  }
+</style>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+<div class="content">
+  <h1>🛡️ PhishWarden 🛡️</h1>
+  <p>A cross platform, AI powered phishing detection and blocking tool</p>
+</div>
+
+<div id="cursor"></div>
+
+<canvas id="particle-canvas"></canvas>
+
+<script>
+  let colors = ["purple", "black", "red"];
+  let currentColorIndex = 0;
+
+  function changeBackground() {
+    currentColorIndex = (currentColorIndex + 1) % colors.length;
+    document.body.style.background = "linear-gradient(to bottom right, " + colors[currentColorIndex] + ", " + colors[(currentColorIndex + 1) % colors.length] + ")";
+  }
+
+  document.addEventListener("click", changeBackground);
+
+  // Particle background setup
+  let canvas = document.getElementById("particle-canvas");
+  let ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+  const numParticles = 500; // Increased number of particles
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 8 + 1; // Adjust the size range here
+      this.speedX = Math.random() * 3 - 1.5;
+      this.speedY = Math.random() * 3 - 1.5;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.size > 0.2) this.size -= 0.1;
+    }
+    draw() {
+      ctx.fillStyle = "white";
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    for (let i = 0; i < numParticles; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let particle of particles) {
+      particle.update();
+      particle.draw();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  init();
+  animate();
+  
+  // Creative cursor element
+  const cursor = document.getElementById("cursor");
+  window.addEventListener("mousemove", (event) => {
+    cursor.style.left = `${event.clientX}px`;
+    cursor.style.top = `${event.clientY}px`;
+  });
+</script>
 </body>
 </html>
